@@ -15,6 +15,6 @@ resource "aws_instance" "project" {
     }
 
     provisioner "local-exec" {
-        command = "echo ${self.id} ansible_ssh_host=${self.public_ip} ansible_ssh_port=22 ansible_user=centos ansible_private_key_file=Users >> /etc/ansible/hosts"
+        command = "echo ${self.tags.Name} ansible_ssh_host=${self.public_ip} ansible_ssh_port=22 ansible_user=centos ansible_private_key_file=/Users/aliakbar/devops-testing.pem >> /etc/ansible/hosts"
     }
 }

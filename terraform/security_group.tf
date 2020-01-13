@@ -1,15 +1,22 @@
 resource "aws_security_group" "project" {
     vpc_id = "vpc-dad2dbbd"
-    name = "project"
+    name = "project-test"
 
     dynamic ingress {
-        for_each = [80, 8080, 22, 8086, ]
+        for_each = [80, 8080, 22, 8086, 8006, 8060, 8088, 9200]
         content {
             from_port = ingress.value
             to_port = ingress.value
             protocol = "tcp"
             cidr_blocks = ["0.0.0.0/0"]
         }
+    }
+
+    ingress {
+        from_port = 8
+        to_port = 0
+        protocol = "icmp"
+        cidr_blocks = ["0.0.0.0/0"]
     }
     
     egress {

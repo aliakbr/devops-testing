@@ -15,7 +15,7 @@ variable "environment" {
 
 variable "keyname" {
     type = string
-    default = "testing-terraform"
+    default = "devops-testing"
 }
 
 variable "termination" {
