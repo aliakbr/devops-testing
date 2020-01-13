@@ -1,0 +1,43 @@
+---
+    - hosts: server
+      become: yes
+      become_user: root
+      tasks:
+        - name: Add CentOS 7 epel release package
+          yum:
+            name: epel-release
+        - name: Install yum prerequisites
+          yum:
+            name: yum-utils
+            state: latest
+        - name: Enable nginx mainline repo
+          shell: yum-config-manager --enable nginx-mainline
+        - name: Install nginx 
+          yum:
+            name: nginx
+            state: latest
+        - name: Install MySQL Latest
+          yum:
+            name: mysql
+            state: latest
+        - name: Start nginx service
+          service:
+            name: nginx
+            state: started
+            enabled: yes
+        - name: Install firewalld
+          yum:
+            name: firewalld
+            state: latest
+        - name: Open Firewall
+          shell:
+            firewall-cmd --permanent --zone=public --add-service=http
+            firewall-cmd --permanent --zone=public --add-service=https
+            firewall-cmd --reload
+        - name: Update All package
+          yum:
+            name: '*'
+            state: latest
+          
+          
+    

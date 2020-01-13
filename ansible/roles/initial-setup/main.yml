@@ -1,0 +1,20 @@
+---
+    # This playbook contains common plays that will be run on all nodes.
+    
+    - name: Install epel-release
+      yum: name=epel-release state=present
+      tags: ntp
+    
+    - name: Install yum prerequisites
+      yum: name=yum-utils state=latest
+    
+    - name: Enable nginx mainline repo
+      shell: yum-config-manager --enable nginx-mainline
+    
+    - name: test to see if selinux is running
+      command: getenforce
+      register: sestatus
+      changed_when: false
+          
+          
+    
