@@ -1,0 +1,34 @@
+---
+    - name: Add epel-release package
+      yum:
+        name: epel-release
+    - name: Install yum prerequisites
+      yum:
+        name: yum-utils
+        state: latest
+    - name: Install NGINX
+      yum:
+        name: nginx
+        state: latest
+    - name: Start nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    - name: Install firewalld
+      yum:
+        name: firewalld
+        state: latest    
+    - name: Open Firewall for http
+      shell: firewall-cmd --permanent --zone=public --add-service=http
+    - name: Open Firewall for https
+      shell: firewall-cmd --permanent --zone=public --add-service=https
+    - name: Reload firewall
+      shell: firewall-cmd --reload
+    - name: Update All package
+      yum:
+        name: '*'
+        state: latest
+    - name: Reboot system
+      reboot:
+      

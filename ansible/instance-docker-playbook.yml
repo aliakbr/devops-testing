@@ -1,0 +1,15 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Git Clone Project
+          git:
+            repo: https://github.com/aliakbr/dummy-docker-repo.git
+            dest: /home/centos/dummy-docker/
+        - name: Docker build
+          become: yes
+          command: docker build -t nginx-testing:1.0.0 -f /home/centos/dummy-docker/Dockerfile .
+        - name: Run docker image as instance
+          become: yes
+          command: docker container run --detach --publish 8081:80 --name test_server nginx-testing:1.0.0

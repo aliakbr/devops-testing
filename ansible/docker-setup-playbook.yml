@@ -15,34 +15,36 @@
           yum:
             name: yum-utils
             state: latest
-        - name: Enable nginx mainline repo
-          shell: yum-config-manager --enable nginx-mainline
-        - name: Install nginx 
+        - name: Install device-mapper-persistent-data
           yum:
-            name: nginx
+            name: device-mapper-persistent-data
             state: latest
-        - name: Install MySQL Latest
+        - name: Install lvm2
           yum:
-            name: mysql
+            name: lvm2
             state: latest
-        - name: Start nginx service
+       
+        - name: Add Docker repo
+          get_url:
+            url: https://download.docker.com/linux/centos/docker-ce.repo
+            dest: /etc/yum.repos.d/docker-ce.repo
+       
+        - name: Install Docker
+          package:
+            name: docker-ce
+            state: latest
+       
+        - name: Start Docker service
           service:
-            name: nginx
+            name: docker
             state: started
             enabled: yes
-        - name: Install firewalld
-          yum:
-            name: firewalld
-            state: latest
-        - name: Start firewalld service
-          service:
-            name: firewalld
-            state: started
-            enabled: yes
-        - name: Open Firewall
-          shell:
-            firewall-cmd --permanent --zone=public --add-service=http
+
         - name: Update All package
           yum:
             name: '*'
+            state: latest
+        - name: Install Git
+          yum:
+            name: 'git'
             state: latest

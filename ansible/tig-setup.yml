@@ -1,0 +1,31 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Add influxdb repo
+          cmd: |
+            cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
+            [influxdb]
+            name = InfluxDB Repository - RHEL \$releasever
+            baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
+            enabled = 1
+            gpgcheck = 1
+            gpgkey = https://repos.influxdata.com/influxdb.key
+            EOF
+        - name: Confirm the directory work fine
+          become: yes
+          command: yum makecache fast
+        - name: Install influxdb
+          become: yes
+          command: yum -y install influxdb vim curl
+        - name: Open firewall
+          become: yes
+          command: firewall-cmd --add-port=8086/tcp --permanent
+        - name: Reload firewall
+          become: yes
+          command: firewall-cmd --reload
+        - name: Start and enable infuxdb
+          become: yes
+          command: systemctl start influxdb && sudo systemctl enable influxdb
+        - 

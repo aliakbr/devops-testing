@@ -5,7 +5,7 @@ variable "ami" {
 
 variable "instance_type" {
   type = string
-  default = "t2.micro"
+  default = "t3.small"
 }
 
 variable "environment" {
@@ -35,10 +35,15 @@ variable "subnet_id" {
 
 variable "zones" {
     description = "AWS Availabililty Zones"
+    type = string
+    default = "ap-southeast-1a"
+}
+
+variable "names" {
+    description = "Server Name"
     type = map
     default = {
-      1 = "ap-southeast-1a"
-      2 = "ap-southeast-1b"
-      3 = "ap-southeast-1c"
+      1 = "server"
+      2 = "client"
     }
 }
