@@ -1,0 +1,20 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Git Clone Project
+          git:
+            repo: https://github.com/aliakbr/dummy-docker-repo.git
+            dest: /home/centos/dummy-docker/
+        - name: Docker build
+          become: yes
+          command: docker build -t nginx-testing:2.0.0 -f /home/centos/dummy-docker/Dockerfile .
+        - name: Docker stop instance
+          command: docker container stop test_server
+        - name: Docker Instance Remove
+          become: yes
+          command: docker container rm test_server
+        - name: Run docker image as instance with newer version
+          become: yes
+          command: docker container run --detach --publish 8080:80 --name test_server nginx-testing:2.0.0

@@ -1,0 +1,20 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Get telegraf repo
+          get_url:
+            url: https://dl.influxdata.com/telegraf/releases/telegraf-1.8.3-1.x86_64.rpm
+            dest: /home/centos/
+        - name: Install telegraf repo
+          become: yes
+          yum:
+            name: /home/centos/https://dl.influxdata.com/telegraf/releases/telegraf-1.8.3-1.x86_64.rpm
+            state: present
+        - name: Start and enable telegraf
+          become: yes
+          service:
+            name: telegraf
+            enabled: yes
+            state: started

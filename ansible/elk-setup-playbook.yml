@@ -1,0 +1,52 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Install java
+          become: yes
+          yum:
+            name: /home/centos/https://dl.influxdata.com/telegraf/releases/telegraf-1.8.3-1.x86_64.rpm
+            state: present
+        - name: Add ELK Repo
+          become: yes
+          cmd: |
+            cat <<EOF | tee /etc/yum.repos.d/elasticsearch.repo
+            [elasticsearch-7.x]
+            name=Elasticsearch repository for 7.x packages
+            baseurl=https://artifacts.elastic.co/packages/7.x/yum
+            gpgcheck=1
+            gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+            enabled=1
+            autorefresh=1
+            type=rpm-md
+            EOF
+        - name: Import Repo
+          become: yes
+          command: rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        - name: Yum clean
+          become: yes
+          command: yum clean all && yum makecache
+        - name: Install elastic search
+          yum:
+            name: elasticsearch
+            state: latest
+        - name: Elastic search test
+          command: rpm -qi elasticsearch
+        - name: Enable elastic search
+          service:
+            name: elasticsearch.service
+            enabled: yes
+            state: started
+        - name: Test elastic search installation
+          command: curl http://127.0.0.1:9200
+        - name: Create test index
+          command: curl -X PUT "http://127.0.0.1:9200/mytest_index"
+        - name: Install Kibana
+          yum:
+            name: kibana
+            state: latest
+        - name: Install logstash
+          yum:
+            name: logstash
+            state: latest

@@ -1,0 +1,64 @@
+---
+    - hosts: all
+      become: yes
+      become_user: root
+      tasks:
+        - name: Add influxdb repo
+          become: yes
+          cmd: |
+            cat <<EOF | tee /etc/yum.repos.d/influxdb.repo
+            [influxdb]
+            name = InfluxDB Repository - RHEL \$releasever
+            baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
+            enabled = 1
+            gpgcheck = 1
+            gpgkey = https://repos.influxdata.com/influxdb.key
+            EOF
+        - name: Confirm the directory work fine
+          become: yes
+          command: yum makecache fast
+        - name: Install influxdb
+          become: yes
+          command: yum -y install influxdb vim curl
+        - name: Open firewall for InfluxDB
+          become: yes
+          command: firewall-cmd --add-port=8086/tcp --permanent
+        - name: Reload firewall for InfluxDB
+          become: yes
+          command: firewall-cmd --reload
+        - name: Start and enable infuxdb
+          become: yes
+          service: 
+            name: influxdb
+            enabled: yes
+            state: started
+        - name: Add grafana repo
+          become: yes
+          cmd: |
+            cat <<EOF | tee /etc/yum.repos.d/grafana.repo
+            [grafana]
+            name=grafana
+            baseurl=https://packages.grafana.com/oss/rpm
+            repo_gpgcheck=1
+            enabled=1
+            gpgcheck=1
+            gpgkey=https://packages.grafana.com/gpg.key
+            sslverify=1
+            sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+            EOF
+        - name: Install grafana
+          yum:
+            name: grafana
+            state: latest
+        - name: Start and enable grafana
+          become: yes
+          service: 
+            name: grafana-server
+            enabled: yes
+            state: started
+        - name: Open firewall for Grafana
+          become: yes
+          command: firewall-cmd --add-port=3000/tcp --permanent
+        - name: Reload firewall for Grafana
+          become: yes
+          command: firewall-cmd --reload
